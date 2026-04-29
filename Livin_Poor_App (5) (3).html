@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Livin' Poor — Capital District Survival Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue:#1B4F8A; --blue-dk:#0d3260; --green:#2D7A3A;
+  --yellow:#F5C842; --orange:#E8762B; --red:#C0392B;
+  --bg:#EDEAE3; --card:#fff; --text:#1a1a1a; --muted:#5a5a5a;
+  --border:rgba(0,0,0,0.12);
+  --fh:'Nunito',sans-serif; --fb:'Nunito Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{font-family:var(--fb);background:#1a1a1a;color:var(--text);height:100%;}
+#app{max-width:430px;margin:0 auto;background:var(--bg);min-height:100vh;position:relative;}
+.screen{display:none;flex-direction:column;min-height:100vh;}
+.screen.active{display:flex;}
+
+/* TEXTURES */
+.tx-dots-wh{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Ccircle cx='3' cy='3' r='1.2' fill='rgba(255,255,255,0.1)'/%3E%3Ccircle cx='9' cy='9' r='1.2' fill='rgba(255,255,255,0.1)'/%3E%3C/svg%3E");}
+.tx-dots-dk{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Ccircle cx='2' cy='2' r='0.7' fill='rgba(0,0,0,0.05)'/%3E%3Ccircle cx='7' cy='7' r='0.7' fill='rgba(0,0,0,0.05)'/%3E%3C/svg%3E");}
+
+/* PAGE BG */
+.page-bg{background-color:var(--bg);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Ccircle cx='2' cy='2' r='0.7' fill='rgba(0,0,0,0.05)'/%3E%3Ccircle cx='7' cy='7' r='0.7' fill='rgba(0,0,0,0.05)'/%3E%3C/svg%3E");flex:1;}
+
+/* TOPBAR */
+.topbar{background:var(--blue);color:white;padding:14px 16px 12px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100;overflow:hidden;}
+.topbar::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Ccircle cx='3' cy='3' r='1.2' fill='rgba(255,255,255,0.1)'/%3E%3Ccircle cx='9' cy='9' r='1.2' fill='rgba(255,255,255,0.1)'/%3E%3C/svg%3E");pointer-events:none;}
+.topbar-back{background:rgba(255,255,255,0.18);border:none;color:white;font-size:18px;width:38px;height:38px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--fh);flex-shrink:0;position:relative;z-index:1;}
+.topbar-title{font-family:var(--fh);font-weight:800;font-size:17px;flex:1;position:relative;z-index:1;line-height:1.2;}
+.topbar-action{background:rgba(255,255,255,0.18);border:none;color:white;font-family:var(--fh);font-weight:700;font-size:12px;padding:6px 12px;border-radius:8px;cursor:pointer;position:relative;z-index:1;}
+
+/* HOME HERO */
+.home-hero{background:var(--blue);padding:24px 16px 30px;color:white;text-align:center;position:relative;overflow:hidden;}
+.home-hero::before{content:'';position:absolute;bottom:-10px;left:-20px;right:-20px;height:28px;background:var(--red);transform:rotate(-1.5deg);z-index:0;}
+.home-hero::after{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='3.5' cy='3.5' r='1.3' fill='rgba(255,255,255,0.09)'/%3E%3Ccircle cx='10.5' cy='10.5' r='1.3' fill='rgba(255,255,255,0.09)'/%3E%3C/svg%3E");pointer-events:none;}
+.home-hero>*{position:relative;z-index:1;}
+.home-hero h1{font-family:var(--fh);font-weight:900;font-size:42px;letter-spacing:-1px;line-height:1;color:white;}
+.home-hero h1 span{color:var(--yellow);}
+.home-hero .sub{font-family:var(--fh);font-weight:700;font-size:11px;color:rgba(255,255,255,0.7);margin-top:4px;letter-spacing:2px;text-transform:uppercase;}
+.home-hero .tagline{font-size:13px;color:rgba(255,255,255,0.85);margin-top:10px;line-height:1.5;max-width:300px;margin-left:auto;margin-right:auto;}
+.tent-badge{background:var(--yellow);color:var(--blue);font-family:var(--fh);font-weight:800;font-size:11px;padding:5px 14px;border-radius:20px;display:inline-block;margin-top:12px;}
+.red-rule{height:3px;background:var(--red);}
+.red-rule::after{content:'';display:block;height:1px;background:rgba(192,57,43,0.25);}
+
+/* QUICK ACTIONS */
+.quick-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:12px 12px 6px;}
+.qa-btn{border:1.5px solid var(--border);border-radius:14px;padding:18px 14px 16px;cursor:pointer;text-align:left;background:var(--card);position:relative;overflow:hidden;width:100%;}
+.qa-btn::after{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M-1,1 l2,-2 M0,8 l8,-8 M6,10 l4,-4' stroke='rgba(0,0,0,0.04)' stroke-width='1'/%3E%3C/svg%3E");pointer-events:none;}
+.qa-btn.urgent{background:var(--red);border-color:var(--red);}
+.qa-btn.urgent::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M-1,1 l2,-2 M0,8 l8,-8 M6,10 l4,-4' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3C/svg%3E");}
+.qa-icon{font-size:28px;display:block;margin-bottom:8px;position:relative;z-index:1;}
+.qa-label{font-family:var(--fh);font-weight:900;font-size:15px;display:block;color:var(--text);position:relative;z-index:1;line-height:1.2;}
+.qa-btn.urgent .qa-label,.qa-btn.urgent .qa-desc{color:white;}
+.qa-btn.urgent .qa-desc{color:rgba(255,255,255,0.82);}
+.qa-desc{font-size:12px;color:var(--muted);margin-top:3px;display:block;position:relative;z-index:1;}
+
+/* SECTION LABEL */
+.sec-label{font-family:var(--fh);font-weight:900;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:10px 12px 5px;}
+
+/* NAV LIST */
+.nav-list{padding:0 12px 12px;display:flex;flex-direction:column;gap:6px;}
+.nav-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;cursor:pointer;display:flex;align-items:center;gap:13px;position:relative;overflow:hidden;}
+.nav-item::after{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Ccircle cx='2' cy='2' r='0.6' fill='rgba(0,0,0,0.04)'/%3E%3Ccircle cx='7' cy='7' r='0.6' fill='rgba(0,0,0,0.04)'/%3E%3C/svg%3E");pointer-events:none;border-radius:inherit;}
+.ni-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.ni-title{font-family:var(--fh);font-weight:800;font-size:16px;color:var(--text);}
+.ni-desc{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.3;}
+.nav-arrow{color:#bbb;font-size:22px;flex-shrink:0;}
+
+/* BOTTOM NAV */
+.bnav{background:var(--card);border-top:1px solid var(--border);display:flex;position:sticky;bottom:0;z-index:100;overflow:hidden;}
+.bnav::after{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Ccircle cx='2' cy='2' r='0.55' fill='rgba(0,0,0,0.025)'/%3E%3Ccircle cx='7' cy='7' r='0.55' fill='rgba(0,0,0,0.025)'/%3E%3C/svg%3E");pointer-events:none;}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:11px 4px 9px;cursor:pointer;border:none;background:none;position:relative;z-index:1;}
+.bnav-item.active .bnav-ico{color:var(--blue);}
+.bnav-item.active .bnav-lbl{color:var(--blue);font-weight:800;}
+.bnav-ico{font-size:22px;color:#999;}
+.bnav-lbl{font-family:var(--fh);font-size:10px;font-weight:600;color:#999;margin-top:3px;}
+
+/* SECTION BANNERS */
+.section-banner{padding:20px 16px 18px;position:relative;overflow:hidden;}
+.section-banner.blue{background:var(--blue);}
+.section-banner.green{background:var(--green);}
+.section-banner.red{background:var(--red);}
+.section-banner.orange{background:var(--orange);}
+.section-banner.dark{background:#1a1a1a;}
+.section-banner::after{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='3.5' cy='3.5' r='1.4' fill='rgba(255,255,255,0.08)'/%3E%3Ccircle cx='10.5' cy='10.5' r='1.4' fill='rgba(255,255,255,0.08)'/%3E%3C/svg%3E");pointer-events:none;}
+.section-banner::before{content:'';position:absolute;bottom:0;left:0;right:0;height:18px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M-1,1 l2,-2 M0,8 l8,-8 M6,10 l4,-4' stroke='rgba(0,0,0,0.18)' stroke-width='1.5'/%3E%3C/svg%3E");pointer-events:none;}
+.section-banner h2{font-family:var(--fh);font-weight:900;font-size:26px;color:white;line-height:1.1;position:relative;z-index:1;}
+.section-banner .lead{font-family:var(--fh);font-weight:700;font-size:13px;color:rgba(255,255,255,0.8);margin-top:6px;line-height:1.4;position:relative;z-index:1;}
+
+/* CONTENT SCROLL */
+.cscroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.pad{padding:16px;}
+.mb8{margin-bottom:8px;} .mb16{margin-bottom:16px;} .mb20{margin-bottom:20px;}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px 14px;margin-bottom:8px;position:relative;overflow:hidden;}
+.card::after{content:'';position:absolute;inset:0;border-radius:inherit;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Ccircle cx='2' cy='2' r='0.6' fill='rgba(0,0,0,0.035)'/%3E%3Ccircle cx='7' cy='7' r='0.6' fill='rgba(0,0,0,0.035)'/%3E%3C/svg%3E");pointer-events:none;}
+.card-inner{position:relative;z-index:1;}
+.step-card{border-left:4px solid var(--blue);}
+.step-card.green{border-left-color:var(--green);}
+.step-card.orange{border-left-color:var(--orange);}
+.step-card.red-l{border-left-color:var(--red);}
+.step-title{font-family:var(--fh);font-weight:800;font-size:14px;color:var(--text);margin-bottom:4px;}
+.step-body{font-size:13px;color:var(--muted);line-height:1.55;}
+
+/* PHASE PILLS */
+.phase-pill{display:inline-block;border-radius:20px;font-family:var(--fh);font-weight:800;font-size:12px;padding:5px 14px;margin-bottom:10px;color:white;position:relative;overflow:hidden;}
+.phase-pill::after{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M-1,1 l2,-2 M0,8 l8,-8 M6,10 l4,-4' stroke='rgba(255,255,255,0.12)' stroke-width='1'/%3E%3C/svg%3E");pointer-events:none;}
+
+/* TIP CARDS */
+.tip-card{border-radius:14px;padding:14px 16px;margin-bottom:9px;position:relative;overflow:hidden;}
+.tip-card::after{content:'';position:absolute;inset:0;border-radius:inherit;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M-1,1 l2,-2 M0,8 l8,-8 M6,10 l4,-4' stroke='rgba(255,255,255,0.1)' stroke-width='1.2'/%3E%3C/svg%3E");pointer-events:none;}
+.tip-num{font-family:var(--fh);font-weight:900;font-size:30px;opacity:0.25;line-height:1;margin-bottom:4px;color:white;position:relative;z-index:1;}
+.tip-txt{font-family:var(--fh);font-weight:700;font-size:14px;color:white;line-height:1.5;position:relative;z-index:1;}
+
+/* CHECKLIST */
+.check-list{list-style:none;display:flex;flex-direction:column;gap:7px;}
+.check-item{display:flex;align-items:flex-start;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 12px;cursor:pointer;position:relative;overflow:hidden;}
+.check-item::after{content:'';position:absolute;inset:0;border-radius:inherit;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Ccircle cx='2' cy='2' r='0.55' fill='rgba(0,0,0,0.035)'/%3E%3Ccircle cx='7' cy='7' r='0.55' fill='rgba(0,0,0,0.035)'/%3E%3C/svg%3E");pointer-events:none;}
+.check-box{width:24px;height:24px;border-radius:6px;border:2px solid var(--blue);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;background:white;margin-top:1px;transition:background 0.15s;position:relative;z-index:1;}
+.check-item.checked .check-box{background:var(--green);border-color:var(--green);color:white;}
+.check-item.checked .check-lbl{text-decoration:line-through;color:var(--muted);}
+.check-lbl{font-family:var(--fh);font-weight:700;font-size:14px;position:relative;z-index:1;}
+.check-note{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4;position:relative;z-index:1;}
+
+/* RESOURCE CARDS */
+.res-cat-lbl{font-family:var(--fh);font-weight:800;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.res-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px;position:relative;overflow:hidden;}
+.res-card::after{content:'';position:absolute;inset:0;border-radius:inherit;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Ccircle cx='2' cy='2' r='0.6' fill='rgba(0,0,0,0.03)'/%3E%3Ccircle cx='7' cy='7' r='0.6' fill='rgba(0,0,0,0.03)'/%3E%3C/svg%3E");pointer-events:none;}
+.res-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;position:relative;z-index:1;}
+.res-info{flex:1;position:relative;z-index:1;}
+.res-name{font-family:var(--fh);font-weight:800;font-size:15px;color:var(--text);}
+.res-addr{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4;}
+.res-btns{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.res-btn{background:none;border:1.5px solid var(--blue);color:var(--blue);border-radius:8px;font-family:var(--fh);font-weight:700;font-size:12px;padding:6px 10px;cursor:pointer;text-decoration:none;display:inline-block;}
+.res-btn.call{background:var(--green);border-color:var(--green);color:white;}
+
+/* ALERTS */
+.alert{border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;gap:10px;align-items:flex-start;position:relative;overflow:hidden;}
+.alert.warn{background:#FFF8E1;border:1.5px solid #E6B800;}
+.alert.danger{background:#FDECEC;border:1.5px solid var(--red);}
+.alert.info{background:#E8F4FD;border:1.5px solid var(--blue);}
+.alert::after{content:'';position:absolute;inset:0;border-radius:inherit;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Ccircle cx='2' cy='2' r='0.6' fill='rgba(0,0,0,0.03)'/%3E%3C/svg%3E");pointer-events:none;}
+.alert-icon{font-size:18px;flex-shrink:0;margin-top:1px;position:relative;z-index:1;}
+.alert-txt{font-size:13px;line-height:1.5;color:#2a2a2a;position:relative;z-index:1;}
+.alert-txt strong{font-family:var(--fh);font-weight:800;display:block;margin-bottom:2px;}
+
+/* INFO ROWS */
+.info-row{display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid var(--border);}
+.info-row:last-child{border-bottom:none;}
+.info-ico{font-size:20px;flex-shrink:0;width:28px;text-align:center;}
+.info-lbl{font-family:var(--fh);font-weight:800;font-size:14px;color:var(--text);}
+.info-val{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.4;}
+
+/* COMMUNITY BOARD */
+.board-compose{background:var(--card);border-bottom:1px solid var(--border);padding:14px 16px;position:relative;overflow:hidden;}
+.board-compose::after{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Ccircle cx='2' cy='2' r='0.6' fill='rgba(0,0,0,0.03)'/%3E%3Ccircle cx='7' cy='7' r='0.6' fill='rgba(0,0,0,0.03)'/%3E%3C/svg%3E");pointer-events:none;}
+.compose-lbl{font-family:var(--fh);font-weight:800;font-size:13px;color:var(--blue);margin-bottom:8px;position:relative;z-index:1;}
+.compose-area{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-family:var(--fb);font-size:15px;color:var(--text);resize:none;min-height:72px;background:var(--bg);outline:none;position:relative;z-index:1;-webkit-appearance:none;}
+.compose-area:focus{border-color:var(--blue);}
+.compose-foot{display:flex;align-items:center;justify-content:space-between;margin-top:8px;position:relative;z-index:1;}
+.compose-hint{font-size:11px;color:var(--muted);}
+.compose-submit{background:var(--blue);color:white;border:none;border-radius:10px;font-family:var(--fh);font-weight:800;font-size:14px;padding:10px 18px;cursor:pointer;}
+.board-feed{padding:12px 16px;display:flex;flex-direction:column;gap:9px;}
+.post{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px 14px;position:relative;overflow:hidden;}
+.post::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--blue);}
+.post.pinned::before{background:var(--orange);}
+.post::after{content:'';position:absolute;inset:0;border-radius:inherit;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Ccircle cx='3' cy='3' r='0.9' fill='rgba(0,0,0,0.03)'/%3E%3Ccircle cx='9' cy='9' r='0.9' fill='rgba(0,0,0,0.03)'/%3E%3C/svg%3E");pointer-events:none;}
+.post-inner{position:relative;z-index:1;}
+.post-hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.post-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-weight:900;font-size:14px;color:white;flex-shrink:0;}
+.post-name{font-family:var(--fh);font-weight:800;font-size:13px;color:var(--text);}
+.post-time{font-size:11px;color:var(--muted);}
+.admin-badge{background:var(--blue);color:white;font-family:var(--fh);font-weight:700;font-size:10px;padding:2px 7px;border-radius:20px;}
+.pin-badge{background:var(--orange);color:white;font-family:var(--fh);font-weight:700;font-size:10px;padding:2px 7px;border-radius:6px;display:inline-block;margin-bottom:6px;}
+.post-body{font-size:14px;line-height:1.6;color:var(--text);}
+.post-acts{display:flex;gap:7px;margin-top:10px;}
+.post-btn{background:none;border:1px solid var(--border);border-radius:8px;font-family:var(--fh);font-weight:700;font-size:12px;color:var(--muted);padding:5px 12px;cursor:pointer;}
+
+/* ADMIN */
+.fld-lbl{font-family:var(--fh);font-weight:700;font-size:13px;color:var(--text);margin-bottom:6px;display:block;}
+.fld-in{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-family:var(--fb);font-size:16px;color:var(--text);background:var(--card);outline:none;-webkit-appearance:none;}
+.fld-in:focus{border-color:var(--blue);}
+.login-btn{width:100%;background:var(--blue);color:white;border:none;border-radius:12px;font-family:var(--fh);font-weight:800;font-size:16px;padding:15px;cursor:pointer;margin-top:8px;}
+.admin-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:18px;}
+.admin-stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;position:relative;overflow:hidden;}
+.admin-stat::after{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Ccircle cx='2' cy='2' r='0.6' fill='rgba(0,0,0,0.03)'/%3E%3Ccircle cx='7' cy='7' r='0.6' fill='rgba(0,0,0,0.03)'/%3E%3C/svg%3E");pointer-events:none;}
+.admin-num{font-family:var(--fh);font-weight:900;font-size:30px;color:var(--blue);position:relative;z-index:1;}
+.admin-nlbl{font-size:12px;color:var(--muted);margin-top:2px;position:relative;z-index:1;}
+.admin-row{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 13px;margin-bottom:8px;position:relative;overflow:hidden;}
+.admin-row::after{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Ccircle cx='2' cy='2' r='0.55' fill='rgba(0,0,0,0.025)'/%3E%3C/svg%3E");pointer-events:none;}
+.admin-preview{font-size:13px;color:var(--text);margin-bottom:6px;line-height:1.5;position:relative;z-index:1;}
+.admin-meta{font-size:11px;color:var(--muted);margin-bottom:7px;position:relative;z-index:1;}
+.admin-btns{display:flex;gap:6px;position:relative;z-index:1;}
+.adm-btn{background:none;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:var(--fh);font-weight:700;padding:5px 12px;cursor:pointer;color:var(--muted);}
+.adm-btn.del{border-color:var(--red);color:var(--red);}
+.adm-btn.pin{border-color:var(--orange);color:var(--orange);}
+.admin-sec-title{font-family:var(--fh);font-weight:900;font-size:17px;color:var(--blue);margin-bottom:12px;}
+.body-txt{font-size:14px;line-height:1.7;color:var(--text);margin-bottom:12px;}
+.tag{display:inline-block;background:rgba(27,79,138,0.1);color:var(--blue);font-family:var(--fh);font-weight:700;font-size:11px;padding:3px 10px;border-radius:20px;margin:2px 3px 2px 0;}
+.tag.grn{background:rgba(45,122,58,0.12);color:var(--green);}
+.tag.org{background:rgba(232,118,43,0.12);color:var(--orange);}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ═══════════════ HOME ═══════════════ -->
+<div class="screen active" id="s-home">
+  <div class="home-hero">
+    <h1>LIVIN' <span>POOR</span></h1>
+    <div class="sub">Capital District of New York</div>
+    <p class="tagline">A super helpful, friendly survival guide for the unhoused community.</p>
+    <span class="tent-badge">Your survival toolkit</span>
+  </div>
+  <div class="red-rule"></div>
+  <div class="page-bg">
+    <div class="quick-actions">
+      <button class="qa-btn urgent" onclick="go('s-emergency')">
+        <span class="qa-icon">🆘</span>
+        <span class="qa-label">Emergency</span>
+        <span class="qa-desc">Crisis &amp; hotlines</span>
+      </button>
+      <button class="qa-btn" onclick="go('s-rehousing')">
+        <span class="qa-icon">🏠</span>
+        <span class="qa-label">72-Hour Plan</span>
+        <span class="qa-desc">Get off the street</span>
+      </button>
+      <button class="qa-btn" onclick="go('s-resources')">
+        <span class="qa-icon">📍</span>
+        <span class="qa-label">Find Help</span>
+        <span class="qa-desc">Shelters, food, services</span>
+      </button>
+      <button class="qa-btn" onclick="go('s-docs')">
+        <span class="qa-icon">📋</span>
+        <span class="qa-label">My Checklist</span>
+        <span class="qa-desc">Docs &amp; gear</span>
+      </button>
+    </div>
+    <div class="sec-label">All Sections</div>
+    <div class="nav-list">
+      <div class="nav-item" onclick="go('s-gray')"><div class="ni-icon" style="background:#E8F4FD;">🚗</div><div style="flex:1;"><div class="ni-title">Gray Areas</div><div class="ni-desc">Couch surfing &amp; living in your car</div></div><span class="nav-arrow">›</span></div>
+      <div class="nav-item" onclick="go('s-shelters')"><div class="ni-icon" style="background:#EBF5EB;">🏚</div><div style="flex:1;"><div class="ni-title">Homeless Shelters</div><div class="ni-desc">What to expect &amp; how to survive them</div></div><span class="nav-arrow">›</span></div>
+      <div class="nav-item" onclick="go('s-sleeping')"><div class="ni-icon" style="background:#F0EBF8;">⛺</div><div style="flex:1;"><div class="ni-title">Sleeping Rough</div><div class="ni-desc">How to survive sleeping outside</div></div><span class="nav-arrow">›</span></div>
+      <div class="nav-item" onclick="go('s-food')"><div class="ni-icon" style="background:#FFF5E6;">🥗</div><div style="flex:1;"><div class="ni-title">Food &amp; Hydration</div><div class="ni-desc">Nutrition &amp; where to eat</div></div><span class="nav-arrow">›</span></div>
+      <div class="nav-item" onclick="go('s-health')"><div class="ni-icon" style="background:#FEF0F0;">❤️</div><div style="flex:1;"><div class="ni-title">Health &amp; Hygiene</div><div class="ni-desc">Take care of your body</div></div><span class="nav-arrow">›</span></div>
+      <div class="nav-item" onclick="go('s-mental')"><div class="ni-icon" style="background:#F5E6FF;">🧠</div><div style="flex:1;"><div class="ni-title">Mental Health</div><div class="ni-desc">Connection, community &amp; coping</div></div><span class="nav-arrow">›</span></div>
+      <div class="nav-item" onclick="go('s-dv')"><div class="ni-icon" style="background:#FFEBEB;">🛡</div><div style="flex:1;"><div class="ni-title">Domestic Violence</div><div class="ni-desc">Help if your home wasn't safe</div></div><span class="nav-arrow">›</span></div>
+      <div class="nav-item" onclick="go('s-tips')"><div class="ni-icon" style="background:#E6F7EE;">💡</div><div style="flex:1;"><div class="ni-title">Tips &amp; Tricks</div><div class="ni-desc">Practical street survival wisdom</div></div><span class="nav-arrow">›</span></div>
+    </div>
+  </div>
+  <div class="bnav">
+    <button class="bnav-item active" onclick="go('s-home')"><span class="bnav-ico">🏠</span><span class="bnav-lbl">Home</span></button>
+    <button class="bnav-item" onclick="go('s-resources')"><span class="bnav-ico">📍</span><span class="bnav-lbl">Resources</span></button>
+    <button class="bnav-item" onclick="go('s-board')"><span class="bnav-ico">💬</span><span class="bnav-lbl">Community</span></button>
+    <button class="bnav-item" onclick="go('s-docs')"><span class="bnav-ico">✅</span><span class="bnav-lbl">Checklist</span></button>
+  </div>
+</div>
+
+<!-- ═══════════════ EMERGENCY ═══════════════ -->
+<div class="screen" id="s-emergency">
+  <div class="topbar"><button class="topbar-back" onclick="back()">←</button><div class="topbar-title">Emergency Help</div></div>
+  <div class="section-banner red"><h2>🆘 Emergency Help</h2><div class="lead">If you are in danger right now — call 911 immediately.</div></div>
+  <div class="page-bg pad cscroll">
+    <div class="alert danger mb8"><span class="alert-icon">⚠️</span><div class="alert-txt"><strong>In immediate danger?</strong>Call 911 right now. Do not wait.</div></div>
+    <div class="res-card mb8" style="border-left:4px solid #C0392B;border-radius:14px;"><div class="res-icon" style="background:#FFEBEB;">📞</div><div class="res-info"><div class="res-name">Unity House DV Hotline</div><div class="res-addr">Domestic &amp; Sexual Violence — 24 hours, anonymous, collect calls accepted</div><div class="res-btns"><a class="res-btn call" href="tel:5182722370">Call (518) 272-2370</a><a class="res-btn" href="sms:5187206161">Text (518) 720-6161</a></div></div></div>
+    <div class="res-card mb8" style="border-left:4px solid var(--blue);border-radius:14px;"><div class="res-icon" style="background:#E8F4FD;">🏥</div><div class="res-info"><div class="res-name">National Rehab Hotline</div><div class="res-addr">Substance abuse &amp; mental health crisis</div><div class="res-btns"><a class="res-btn call" href="tel:18008889773">Call Now</a></div></div></div>
+    <div class="res-card" style="border-left:4px solid var(--orange);border-radius:14px;"><div class="res-icon" style="background:#FFF5E6;">❄️</div><div class="res-info"><div class="res-name">Code Blue Shelter Alert</div><div class="res-addr">Extra shelters open below 32°F. In freezing weather you can die within hours. Find shelter immediately.</div></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════ 72-HOUR ═══════════════ -->
+<div class="screen" id="s-rehousing">
+  <div class="topbar"><button class="topbar-back" onclick="back()">←</button><div class="topbar-title">72-Hour Rehousing Plan</div></div>
+  <div class="section-banner blue"><h2>72-Hour Plan</h2><div class="lead">Don't panic. Here is what to do right now, step by step.</div></div>
+  <div class="page-bg pad cscroll">
+    <div class="mb20">
+      <div class="phase-pill" style="background:var(--blue);">Within 24 Hours</div>
+      <div class="card step-card mb8"><div class="card-inner"><div class="step-title">Breathe. Take physical action to calm down.</div><div class="step-body">Two sharp inhales, one long exhale. Or blow warm breath on the back of your upturned thumb. Repeat as much as you need.</div></div></div>
+      <div class="card step-card mb8"><div class="card-inner"><div class="step-title">Gather your documents</div><div class="step-body">Put them in a folder. Birth certificate, Social Security card, insurance cards, library card.</div></div></div>
+      <div class="card step-card mb8"><div class="card-inner"><div class="step-title">Do NOT drink or use drugs today</div><div class="step-body">Even if you normally do. You need a clear head for the next 72 hours. What you do after that is up to you.</div></div></div>
+      <div class="card step-card mb8"><div class="card-inner"><div class="step-title">Buy a notebook and two pens</div><div class="step-body">Write everything down. Don't trust your memory right now. When people see you taking notes, they'll be more honest with you.</div></div></div>
+      <div class="card step-card mb8"><div class="card-inner"><div class="step-title">Write down all nearby WiFi spots</div><div class="step-body">Libraries, McDonald's, some supermarkets. These are your lifelines.</div></div></div>
+    </div>
+    <div class="mb20">
+      <div class="phase-pill" style="background:var(--green);">Within 48 Hours</div>
+      <div class="card step-card green mb8"><div class="card-inner"><div class="step-title">Go to your local Dept. of Social Services</div><div class="step-body">They have emergency money and resources. Be patient and calm — you get more flies with honey than with vinegar.</div></div></div>
+      <div class="card step-card green mb8"><div class="card-inner"><div class="step-title">Find a homeless shelter or assistance org</div><div class="step-body">Go early. Sign up for the waiting list. Ask about employment services, showers, and bus passes.</div></div></div>
+      <div class="card step-card green mb8"><div class="card-inner"><div class="step-title">Get a mailing address</div><div class="step-body">P.O. Box works. Better: a "business address" at UPS or FedEx. You need a real street address for job applications.</div></div></div>
+      <div class="card step-card green mb8"><div class="card-inner"><div class="step-title">Connect with a church</div><div class="step-body">Explain what happened. Don't ask for anything. Reach out to people you trust.</div></div></div>
+    </div>
+    <div class="mb20">
+      <div class="phase-pill" style="background:var(--orange);">Within 72 Hours</div>
+      <div class="card step-card orange mb8"><div class="card-inner"><div class="step-title">Get the cheapest phone you can find</div><div class="step-body">Make sure it supports WiFi so you can text and access the internet even without minutes.</div></div></div>
+      <div class="card step-card orange mb8"><div class="card-inner"><div class="step-title">Understand: getting things is easier than getting money</div><div class="step-body">Non-profits get discounts on supplies. There's less stigma giving items than cash. Ask for items, not money.</div></div></div>
+      <div class="card step-card orange mb8"><div class="card-inner"><div class="step-title">If you work or DSS is helping — don't look for an apartment yet</div><div class="step-body">Look for a private room. Landlords sometimes rent individual rooms — cheaper, with kitchen and bathroom access.</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ DOCS / CHECKLIST ═══════════════ -->
+<div class="screen" id="s-docs">
+  <div class="topbar"><button class="topbar-back" onclick="back()">←</button><div class="topbar-title">Documents &amp; Gear</div></div>
+  <div class="section-banner dark"><h2>📋 Documents &amp; Gear</h2><div class="lead">Tap items to check them off. Documents can mean the difference between getting help or not.</div></div>
+  <div class="page-bg pad cscroll">
+    <div class="sec-label" style="padding:0 0 8px;">Essential Documents</div>
+    <ul class="check-list mb20">
+      <li class="check-item" onclick="chk(this)"><div class="check-box"></div><div><div class="check-lbl">Birth Certificate</div><div class="check-note">Hard to replace without other ID. Social services can help you get it.</div></div></li>
+      <li class="check-item" onclick="chk(this)"><div class="check-box"></div><div><div class="check-lbl">Social Security Card</div><div class="check-note">Social service organizations can help you navigate getting this.</div></div></li>
+      <li class="check-item" onclick="chk(this)"><div class="check-box"></div><div><div class="check-lbl">Driver's License or State ID</div><div class="check-note">Need birth cert + SSN card + mailing address to get this.</div></div></li>
+      <li class="check-item" onclick="chk(this)"><div class="check-box"></div><div><div class="check-lbl">Medical Insurance Card</div><div class="check-note">Medicaid or Medicare card.</div></div></li>
+      <li class="check-item" onclick="chk(this)"><div class="check-box"></div><div><div class="check-lbl">Medical Info Sheet</div><div class="check-note">Your conditions, past procedures, medications. Keep this on your person.</div></div></li>
+      <li class="check-item" onclick="chk(this)"><div class="check-box"></div><div><div class="check-lbl">Library Card</div><div class="check-note">Easy to get. Gives you WiFi, computer access, and a safe warm place.</div></div></li>
+    </ul>
+    <div class="sec-label" style="padding:0 0 8px;">Backpack Wishlist</div>
+    <ul class="check-list">
+      <li class="check-item" onclick="chk(this)"><div class="check-box"></div><div><div class="check-lbl">Sleeping bag</div><div class="check-note">In a pinch, a solar/mylar blanket works.</div></div></li>
+      <li class="check-item" onclick="chk(this)"><div class="check-box"></div><div><div class="check-lbl">Multi-tool</div><div class="check-note">Mid-grade. Everything you get should be replaceable.</div></div></li>
+      <li class="check-item" onclick="chk(this)"><div class="check-box"></div><div><div class="check-lbl">Folding knife (under 4")</div><div class="check-note">For cutting cord and various uses. Keep in backpack, not on your person.</div></div></li>
+      <li class="check-item" onclick="chk(this)"><div class="check-box"></div><div><div class="check-lbl">Lighter and matches</div><div class="check-note">Long barbecue lighter + strike-anywhere matches.</div></div></li>
+      <li class="check-item" onclick="chk(this)"><div class="check-box"></div><div><div class="check-lbl">Sturdy can opener</div><div class="check-note">Get a good one. It has to actually work.</div></div></li>
+      <li class="check-item" onclick="chk(this)"><div class="check-box"></div><div><div class="check-lbl">First aid kit</div><div class="check-note">Bandages, gauze, tweezers, antibiotic ointment, alcohol pads, pain relievers.</div></div></li>
+      <li class="check-item" onclick="chk(this)"><div class="check-box"></div><div><div class="check-lbl">Plastic tumbler with lid and straw</div><div class="check-note">Always have water on you.</div></div></li>
+      <li class="check-item" onclick="chk(this)"><div class="check-box"></div><div><div class="check-lbl">Two Sterno cans</div><div class="check-note">For heating foods that are better warm.</div></div></li>
+      <li class="check-item" onclick="chk(this)"><div class="check-box"></div><div><div class="check-lbl">Notebook and pens</div><div class="check-note">Write everything down. Don't trust your memory.</div></div></li>
+    </ul>
+  </div>
+  <div class="bnav">
+    <button class="bnav-item" onclick="go('s-home')"><span class="bnav-ico">🏠</span><span class="bnav-lbl">Home</span></button>
+    <button class="bnav-item" onclick="go('s-resources')"><span class="bnav-ico">📍</span><span class="bnav-lbl">Resources</span></button>
+    <button class="bnav-item" onclick="go('s-board')"><span class="bnav-ico">💬</span><span class="bnav-lbl">Community</span></button>
+    <button class="bnav-item active"><span class="bnav-ico">✅</span><span class="bnav-lbl">Checklist</span></button>
+  </div>
+</div>
+
+<!-- ═══════════════ RESOURCES ═══════════════ -->
+<div class="screen" id="s-resources">
+  <div class="topbar"><button class="topbar-back" onclick="back()">←</button><div class="topbar-title">Find Help Near You</div></div>
+  <div class="section-banner green"><h2>📍 Find Help</h2><div class="lead">Albany · Troy · Schenectady · Saratoga</div></div>
+  <div class="page-bg pad cscroll">
+    <div class="res-cat-lbl mb8">🍽 Food Resources</div>
+    <div class="res-card"><div class="res-icon" style="background:#FFF5E6;">🍲</div><div class="res-info"><div class="res-name">FOCUS Churches Food Pantry</div><div class="res-addr">275 State St, Albany, NY 12210</div><div class="res-btns"><a class="res-btn call" href="tel:5184654200">📞 Call</a><a class="res-btn" href="https://maps.apple.com/?q=275+State+St+Albany+NY">🗺 Directions</a></div></div></div>
+    <div class="res-card"><div class="res-icon" style="background:#EBF5EB;">🥘</div><div class="res-info"><div class="res-name">Unity House Food Pantry</div><div class="res-addr">2431 6th Ave, Troy, NY 12180</div><div class="res-btns"><a class="res-btn call" href="tel:5182721000">📞 Call</a><a class="res-btn" href="https://maps.apple.com/?q=2431+6th+Ave+Troy+NY">🗺 Directions</a></div></div></div>
+    <div class="res-card"><div class="res-icon" style="background:#FFF5E6;">🏬</div><div class="res-info"><div class="res-name">Bethesda House Food Pantry</div><div class="res-addr">834 State St, Schenectady, NY 12307</div><div class="res-btns"><a class="res-btn call" href="tel:5183747873">📞 (518) 374-7873</a></div></div></div>
+    <div class="res-card mb16"><div class="res-icon" style="background:#E8F4FD;">🏦</div><div class="res-info"><div class="res-name">Regional Food Bank of NENY</div><div class="res-addr">965 Albany Shaker Rd, Latham, NY 12110</div><div class="res-btns"><a class="res-btn call" href="tel:5184584760">📞 Call</a></div></div></div>
+
+    <div class="res-cat-lbl mb8">🏛 Dept. of Social Services</div>
+    <div class="res-card"><div class="res-icon" style="background:#E8F4FD;">🏛</div><div class="res-info"><div class="res-name">Albany County DSS</div><div class="res-addr">162 Washington Ave, Albany NY 12203</div><div class="res-btns"><a class="res-btn call" href="tel:5184657282">📞 (518) 465-7282</a></div></div></div>
+    <div class="res-card"><div class="res-icon" style="background:#EBF5EB;">🏛</div><div class="res-info"><div class="res-name">Rensselaer County DSS</div><div class="res-addr">1229 Seventh Ave, Troy NY 12180</div><div class="res-btns"><a class="res-btn call" href="tel:5182726008">📞 (518) 272-6008</a></div></div></div>
+    <div class="res-card"><div class="res-icon" style="background:#F5E6FF;">🏛</div><div class="res-info"><div class="res-name">Schenectady County DSS</div><div class="res-addr">245 Jay St, Schenectady NY 12306</div><div class="res-btns"><a class="res-btn call" href="tel:5185558712">📞 (518) 555-8712</a></div></div></div>
+    <div class="res-card mb16"><div class="res-icon" style="background:#FFF5E6;">🏛</div><div class="res-info"><div class="res-name">Saratoga County DSS</div><div class="res-addr">152 W High St, Ballston Spa NY 12020</div><div class="res-btns"><a class="res-btn call" href="tel:5185558712">📞 (518) 555-8712</a></div></div></div>
+
+    <div class="res-cat-lbl mb8">🏚 Area Shelters</div>
+    <div class="res-card"><div class="res-icon" style="background:#EBF5EB;">⛪</div><div class="res-info"><div class="res-name">City Mission</div><div class="res-addr">425 Hamilton St, Schenectady NY 12305</div><div class="res-btns"><a class="res-btn call" href="tel:5183889083">📞 Call</a></div></div></div>
+    <div class="res-card"><div class="res-icon" style="background:#E8F4FD;">🏠</div><div class="res-info"><div class="res-name">Outreach Shelter</div><div class="res-addr">123 Main St S, Schenectady NY</div><div class="res-btns"><a class="res-btn call" href="tel:5183889083">📞 (518) 388-9083</a></div></div></div>
+    <div class="res-card"><div class="res-icon" style="background:#FFF5E6;">✝️</div><div class="res-info"><div class="res-name">St. Joseph's</div><div class="res-addr">123 Main Street, Schenectady NY</div><div class="res-btns"><a class="res-btn call" href="tel:5183889083">📞 (518) 388-9083</a></div></div></div>
+    <div class="res-card mb16"><div class="res-icon" style="background:#EBF5EB;">🌅</div><div class="res-info"><div class="res-name">Morning Harvest</div><div class="res-addr">123 Main Street, Schenectady NY</div><div class="res-btns"><a class="res-btn call" href="tel:5183889083">📞 (518) 388-9083</a></div></div></div>
+
+    <div class="res-cat-lbl mb8">🧠 Mental Health &amp; Substance Use</div>
+    <div class="res-card"><div class="res-icon" style="background:#F5E6FF;">💊</div><div class="res-info"><div class="res-name">SPARC — St. Peter's Addiction Recovery</div><div class="res-addr">Cohoes, NY — substance abuse rehab</div><div class="res-btns"><a class="res-btn" href="https://sparc-st-peters-addiction-recovery-center-cohoes.com">🌐 Website</a></div></div></div>
+    <div class="res-card"><div class="res-icon" style="background:#E8F4FD;">🧠</div><div class="res-info"><div class="res-name">NAMI</div><div class="res-addr">nami.org — Advocacy &amp; Direct Services</div><div class="res-btns"><a class="res-btn" href="https://www.nami.org">🌐 nami.org</a></div></div></div>
+    <div class="res-card mb16"><div class="res-icon" style="background:#EBF5EB;">📱</div><div class="res-info"><div class="res-name">NYS OASAS Hopeline</div><div class="res-addr">oasas.ny.gov/hopeline</div><div class="res-btns"><a class="res-btn call" href="tel:18774662835">📞 Hopeline</a></div></div></div>
+
+    <div class="res-cat-lbl mb8">🛡 Community Help</div>
+    <div class="res-card"><div class="res-icon" style="background:#FFEBEB;">⚖️</div><div class="res-info"><div class="res-name">Legal Help</div><div class="res-addr">2476 Continental St, Albany NY 12204</div><div class="res-btns"><a class="res-btn call" href="tel:5182357282">📞 (518) 235-7282</a></div></div></div>
+    <div class="res-card"><div class="res-icon" style="background:#E8F4FD;">💊</div><div class="res-info"><div class="res-name">Medicine of the Capital District</div><div class="res-addr">1854 Route 9, Clifton Park NY 12065</div><div class="res-btns"><a class="res-btn call" href="tel:5185837832">📞 (518) 583-7832</a></div></div></div>
+    <div class="res-card"><div class="res-icon" style="background:#EBF5EB;">👕</div><div class="res-info"><div class="res-name">Clothing of the Capital District</div><div class="res-addr">1854 Route 9, Clifton Park NY 12065</div><div class="res-btns"><a class="res-btn call" href="tel:5185837832">📞 (518) 583-7832</a></div></div></div>
+    <div class="res-card"><div class="res-icon" style="background:#FFF5E6;">🛋</div><div class="res-info"><div class="res-name">Furniture of the Capital District</div><div class="res-addr">1854 Route 9, Clifton Park NY 12065</div><div class="res-btns"><a class="res-btn call" href="tel:5185837832">📞 (518) 583-7832</a></div></div></div>
+    <div class="res-card"><div class="res-icon" style="background:#F5E6FF;">🐾</div><div class="res-info"><div class="res-name">Pet Vaccinations</div><div class="res-addr">2476 Continental St, Albany NY 12204</div><div class="res-btns"><a class="res-btn call" href="tel:5182357282">📞 (518) 235-7282</a></div></div></div>
+    <div class="res-card"><div class="res-icon" style="background:#E8F4FD;">📱</div><div class="res-info"><div class="res-name">Phones &amp; Chargers</div><div class="res-addr">2476 Continental St, Albany NY 12204</div><div class="res-btns"><a class="res-btn call" href="tel:5182357282">📞 (518) 235-7282</a></div></div></div>
+    <div class="res-card mb8"><div class="res-icon" style="background:#EBF5EB;">🚿</div><div class="res-info"><div class="res-name">Showers</div><div class="res-addr">2476 Continental St, Albany NY 12204</div><div class="res-btns"><a class="res-btn call" href="tel:5182357282">📞 (518) 235-7282</a></div></div></div>
+  </div>
+  <div class="bnav">
+    <button class="bnav-item" onclick="go('s-home')"><span class="bnav-ico">🏠</span><span class="bnav-lbl">Home</span></button>
+    <button class="bnav-item active"><span class="bnav-ico">📍</span><span class="bnav-lbl">Resources</span></button>
+    <button class="bnav-item" onclick="go('s-board')"><span class="bnav-ico">💬</span><span class="bnav-lbl">Community</span></button>
+    <button class="bnav-item" onclick="go('s-docs')"><span class="bnav-ico">✅</span><span class="bnav-lbl">Checklist</span></button>
+  </div>
+</div>
+
+<!-- ═══════════════ GRAY AREAS ═══════════════ -->
+<div class="screen" id="s-gray">
+  <div class="topbar"><button class="topbar-back" onclick="back()">←</button><div class="topbar-title">Gray Areas</div></div>
+  <div class="section-banner" style="background:#1a1a1a;"><h2>🚗 Gray Areas</h2><div class="lead">Not all homelessness is sleeping on a park bench. You may have cushions.</div></div>
+  <div class="page-bg pad cscroll">
+    <p class="body-txt">About 45,000–67,500 people currently live in their cars. 75% of unsheltered people couchsurfed in the year before. The overriding principle: be as inconspicuous as possible.</p>
+    <div class="sec-label" style="padding:0 0 8px;">If You're Couch Surfing</div>
+    <div class="tip-card" style="background:var(--blue);"><div class="tip-num">01</div><div class="tip-txt">Leave no trace. Clean up immediately. Make it look like you're not there. Give your host privacy.</div></div>
+    <div class="tip-card" style="background:var(--green);"><div class="tip-num">02</div><div class="tip-txt">Don't keep asking. Ask for only one general thing from each person in your support network. Prevents burnout.</div></div>
+    <div class="tip-card" style="background:var(--orange);"><div class="tip-num">03</div><div class="tip-txt">Report progress. Keep your host updated on steps toward housing. Stick to progress in leaving.</div></div>
+    <div class="sec-label" style="padding:12px 0 8px;">If You're Living in Your Car</div>
+    <div class="info-row"><span class="info-ico">📋</span><div><div class="info-lbl">Keep registration and inspection current</div><div class="info-val">A legal-looking car is invisible to police.</div></div></div>
+    <div class="info-row"><span class="info-ico">🚗</span><div><div class="info-lbl">Move the car every night</div><div class="info-val">Stay in commercial areas, not residential neighborhoods.</div></div></div>
+    <div class="info-row"><span class="info-ico">🌙</span><div><div class="info-lbl">Slight window tint helps</div><div class="info-val">People have to actively stare to notice someone sleeping inside.</div></div></div>
+    <div class="info-row"><span class="info-ico">👔</span><div><div class="info-lbl">Library card + thrift store business casual</div><div class="info-val">Walk anywhere in a commercial area and no one gives you a second look.</div></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════ SHELTERS ═══════════════ -->
+<div class="screen" id="s-shelters">
+  <div class="topbar"><button class="topbar-back" onclick="back()">←</button><div class="topbar-title">Homeless Shelters</div></div>
+  <div class="section-banner" style="background:#2D4A1E;"><h2>🏚 Homeless Shelters</h2><div class="lead">What to expect and how to survive them.</div></div>
+  <div class="page-bg pad cscroll">
+    <div class="alert warn mb8"><span class="alert-icon">📌</span><div class="alert-txt"><strong>Go early.</strong> Shelters fill up. Show up at opening time to sign up for a bed. The early bird catches the worm.</div></div>
+    <p class="body-txt">Shelters aren't easy. Everything people deal with on the street comes into an enclosed space. Things get stolen. People fight. But the workers there pull miracles from nothing every day.</p>
+    <div class="sec-label" style="padding:0 0 8px;">5 Ways to Survive a Shelter</div>
+    <div class="tip-card" style="background:var(--blue);"><div class="tip-num">1</div><div class="tip-txt">Stash valuables before you enter. You're there to sleep and maybe eat — not to keep your stuff.</div></div>
+    <div class="tip-card" style="background:#3a3a3a;"><div class="tip-num">2</div><div class="tip-txt">Blend in. Wear bland clothing. No political or religious statements. A shelter isn't where you express yourself.</div></div>
+    <div class="tip-card" style="background:#5a3a8a;"><div class="tip-num">3</div><div class="tip-txt">Tie your shoes to your body with shoelaces when you sleep. It won't stop a thief but it'll wake you up.</div></div>
+    <div class="tip-card" style="background:var(--orange);"><div class="tip-num">4</div><div class="tip-txt">Follow all the rules, every time. Assume they all apply to you even if you've been allowed to break one before.</div></div>
+    <div class="tip-card" style="background:var(--green);"><div class="tip-num">5</div><div class="tip-txt">Take advantage of everything offered: meals, showers, casework, referrals. Shelters move things faster than you can alone.</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════ SLEEPING ROUGH ═══════════════ -->
+<div class="screen" id="s-sleeping">
+  <div class="topbar"><button class="topbar-back" onclick="back()">←</button><div class="topbar-title">Sleeping Rough</div></div>
+  <div class="section-banner" style="background:#2c2c2c;"><h2>⛺ Sleeping Rough</h2><div class="lead">One of the hardest things. Here's how to stay safe.</div></div>
+  <div class="page-bg pad cscroll">
+    <div class="alert danger mb8"><span class="alert-icon">❄️</span><div class="alert-txt"><strong>Below freezing: find a Code Blue shelter now.</strong> Exposure can kill in hours. Do not wait.</div></div>
+    <div class="alert warn mb16"><span class="alert-icon">⚖️</span><div class="alert-txt"><strong>Legal reminder:</strong> Laws vary everywhere. Sleeping on private property without permission may be trespassing. This is general info, not legal advice.</div></div>
+    <div class="sec-label" style="padding:0 0 8px;">The Triple Threat</div>
+    <div class="res-card mb8"><div class="res-icon" style="background:#FFF5E6;">🌧</div><div class="res-info"><div class="res-name">Elements</div><div class="res-addr">Get cardboard, a tarp, or bubble wrap between you and the ground — even warm nights, the ground pulls out body heat.</div></div></div>
+    <div class="res-card mb8"><div class="res-icon" style="background:#FFEBEB;">🐀</div><div class="res-info"><div class="res-name">Animals</div><div class="res-addr">Keep food trash far from where you sleep. Think like a camper. Any open food stored away.</div></div></div>
+    <div class="res-card mb16"><div class="res-icon" style="background:#F5E6FF;">👁</div><div class="res-info"><div class="res-name">People</div><div class="res-addr">Scout your spot at different times. A good daylight spot may not be private at night.</div></div></div>
+    <div class="sec-label" style="padding:0 0 8px;">Smart Habits</div>
+    <div class="info-row"><span class="info-ico">🔦</span><div><div class="info-lbl">Light discipline</div><div class="info-val">Phone screen is visible. A lit cigarette has light and smell. Keep light aimed down.</div></div></div>
+    <div class="info-row"><span class="info-ico">🚫</span><div><div class="info-lbl">Avoid drainage ditches and depressions</div><div class="info-val">Hidden but can flood. Tempting, dangerous.</div></div></div>
+    <div class="info-row"><span class="info-ico">🧹</span><div><div class="info-lbl">Leave no trace</div><div class="info-val">Mess = police call = losing the spot.</div></div></div>
+    <div class="info-row"><span class="info-ico">🏙</span><div><div class="info-lbl">Avoid residential neighborhoods</div><div class="info-val">Barking dogs, concerned neighbors. Commercial areas are safer.</div></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════ FOOD ═══════════════ -->
+<div class="screen" id="s-food">
+  <div class="topbar"><button class="topbar-back" onclick="back()">←</button><div class="topbar-title">Food &amp; Hydration</div></div>
+  <div class="section-banner green"><h2>🥗 Food &amp; Hydration</h2><div class="lead">You're an athlete now. Treat your body that way.</div></div>
+  <div class="page-bg pad cscroll">
+    <div class="alert info mb16"><span class="alert-icon">💧</span><div class="alert-txt"><strong>Water first.</strong> You can survive 2 months without food. You have 3 days without water. Hydration is survival, not a back-burner thing.</div></div>
+    <div class="sec-label" style="padding:0 0 8px;">The 4 Macros — Know Your Fuel</div>
+    <div class="res-card mb8"><div class="res-icon" style="background:#EBF5EB;">🥩</div><div class="res-info"><div class="res-name">Protein</div><div class="res-addr">Builds muscle. Burns steady. Meat, beans, nuts. The healthiest energy source.</div><div style="margin-top:6px;"><span class="tag grn">Most Important</span></div></div></div>
+    <div class="res-card mb8"><div class="res-icon" style="background:#FFF5E6;">🍞</div><div class="res-info"><div class="res-name">Carbohydrates</div><div class="res-addr">Fast energy. Burns quick. If you're diabetic, watch your intake carefully.</div><div style="margin-top:6px;"><span class="tag org">Quick Energy</span></div></div></div>
+    <div class="res-card mb8"><div class="res-icon" style="background:#FFEBEB;">🧈</div><div class="res-info"><div class="res-name">Fats</div><div class="res-addr">Long-burning energy. If it's cold and you're outside, you want fats. Dairy, eggs, nuts, red meat.</div><div style="margin-top:6px;"><span class="tag">Cold Weather</span></div></div></div>
+    <div class="res-card mb16"><div class="res-icon" style="background:#E8F4FD;">🥦</div><div class="res-info"><div class="res-name">Fiber</div><div class="res-addr">Vegetables, fruits, grains. Vitamins, nutrients, digestive health. The toothbrush for your intestines.</div></div></div>
+    <div class="sec-label" style="padding:0 0 8px;">Drinks Ranked</div>
+    <div class="info-row"><span class="info-ico">💧</span><div><div class="info-lbl">Water</div><div class="info-val">Best. Zero sugar, zero calories. Fountain water at convenience stores is cheap or free.</div></div></div>
+    <div class="info-row"><span class="info-ico">🥛</span><div><div class="info-lbl">Milk</div><div class="info-val">Electrolytes and protein. Good, but spoils fast in heat.</div></div></div>
+    <div class="info-row"><span class="info-ico">🥤</span><div><div class="info-lbl">Sugary drinks</div><div class="info-val">Can worsen dehydration when sick. Avoid if possible.</div></div></div>
+    <div class="info-row"><span class="info-ico">🍺</span><div><div class="info-lbl">Alcohol</div><div class="info-val">Does NOT count as hydration. Makes dehydration worse. Avoid when surviving.</div></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════ HEALTH ═══════════════ -->
+<div class="screen" id="s-health">
+  <div class="topbar"><button class="topbar-back" onclick="back()">←</button><div class="topbar-title">Health &amp; Hygiene</div></div>
+  <div class="section-banner red"><h2>❤️ Health &amp; Hygiene</h2><div class="lead">Your body is your home now. Take care of it.</div></div>
+  <div class="page-bg pad cscroll">
+    <div class="alert warn mb16"><span class="alert-icon">⚕️</span><div class="alert-txt"><strong>Not medical advice.</strong> If something is wrong, seek a health professional — even the ER. Your life will get better. Be alive for it.</div></div>
+    <div class="sec-label" style="padding:0 0 8px;">Hygiene — You Need People</div>
+    <p class="body-txt">You still live in a world of people with eyes and noses. Even the best-intentioned people won't help you if you smell bad.</p>
+    <div class="info-row"><span class="info-ico">🚿</span><div><div class="info-lbl">Where to shower</div><div class="info-val">Gym (basic membership), YMCA, truck stops, homeless shelters.</div></div></div>
+    <div class="info-row"><span class="info-ico">🧴</span><div><div class="info-lbl">3-in-1 shampoo/body wash</div><div class="info-val">Gets everything in one bottle. Space-efficient.</div></div></div>
+    <div class="info-row"><span class="info-ico">🧻</span><div><div class="info-lbl">Baby wipes</div><div class="info-val">Keep your face clean between showers. Small pack fits in your bag.</div></div></div>
+    <div class="info-row mb16"><span class="info-ico">👕</span><div><div class="info-lbl">Extra set of clothes</div><div class="info-val">Change is dignity. Laundromats when you can. Thrift stores are cheap.</div></div></div>
+    <div class="sec-label" style="padding:0 0 8px;">Health Tracking Tools to Have</div>
+    <div class="info-row"><span class="info-ico">🌡</span><div><div class="info-lbl">Thermometer</div><div class="info-val">Know your baseline. Track changes. A sign something is wrong.</div></div></div>
+    <div class="info-row"><span class="info-ico">💓</span><div><div class="info-lbl">Blood pressure cuff</div><div class="info-val">Consistent readings make it accurate to you even if not perfect.</div></div></div>
+    <div class="info-row"><span class="info-ico">💍</span><div><div class="info-lbl">Pulse oximeter</div><div class="info-val">Clip to finger. Tells you pulse and blood oxygen level. Can save your life.</div></div></div>
+    <div class="sec-label" style="padding:12px 0 8px;">Getting Medical Care</div>
+    <div class="info-row"><span class="info-ico">🏥</span><div><div class="info-lbl">Find a free clinic</div><div class="info-val">Ask your local shelter or DSS for nearby free clinics.</div></div></div>
+    <div class="info-row"><span class="info-ico">💳</span><div><div class="info-lbl">If you have Medicaid, use it</div><div class="info-val">Don't skip care because you feel undeserving. Use every benefit you have.</div></div></div>
+    <div class="info-row"><span class="info-ico">📝</span><div><div class="info-lbl">Keep a health log</div><div class="info-val">Unknown pains, rashes, headaches — write them down with dates. This is your medical record.</div></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════ MENTAL HEALTH ═══════════════ -->
+<div class="screen" id="s-mental">
+  <div class="topbar"><button class="topbar-back" onclick="back()">←</button><div class="topbar-title">Mental Health</div></div>
+  <div class="section-banner" style="background:#4a2a7a;"><h2>🧠 Mental Health</h2><div class="lead">"You can't do this alone. It's a good thing you won't have to."</div></div>
+  <div class="page-bg pad cscroll">
+    <p class="body-txt">The mentally ill are disproportionately represented on the street, and unlike housed people, they lack consistent access to treatment. Connection is medication for the troubled mind.</p>
+    <div class="alert warn mb16"><span class="alert-icon">⚠️</span><div class="alert-txt"><strong>Self-medicating with drugs or alcohol makes mental illness worse and more dangerous.</strong> Look for real support: community mental health clinics, free counseling, 12-step groups, crisis lines.</div></div>
+    <div class="sec-label" style="padding:0 0 8px;">How to Make Friends (Really)</div>
+    <div class="tip-card" style="background:var(--blue);"><div class="tip-num">01</div><div class="tip-txt">Ask for something tiny first. What time is it? How do I get to X? Easy to answer. Now you know them.</div></div>
+    <div class="tip-card" style="background:#4a2a7a;"><div class="tip-num">02</div><div class="tip-txt">Listen more than you talk. Ask for clarification when you don't understand. "Active listening" builds deep trust fast.</div></div>
+    <div class="tip-card" style="background:var(--green);"><div class="tip-num">03</div><div class="tip-txt">Next time you see them, just nod. Or say "what's going on." You now have an acquaintance. That's how community starts.</div></div>
+    <div class="sec-label" style="padding:12px 0 8px;">Jedi Mind Tricks (Really Just Science)</div>
+    <div class="card mb8"><div class="card-inner"><div class="step-title">Picture an endless subway train</div><div class="step-body">Every ten minutes the train stops and the door opens. As long as you're doing the work, you're on it. If you fall off — the train comes back in ten minutes. You can always get back on.</div></div></div>
+    <div class="card mb8"><div class="card-inner"><div class="step-title">Humans bounce back</div><div class="step-body">Studies show that about a year after a major life catastrophe, many people feel as happy as they did before — even when something permanent has changed. This is not easy. But it is possible. You are possible.</div></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════ DOMESTIC VIOLENCE ═══════════════ -->
+<div class="screen" id="s-dv">
+  <div class="topbar"><button class="topbar-back" onclick="back()">←</button><div class="topbar-title">Domestic Violence</div></div>
+  <div class="section-banner red"><h2>🛡 Domestic Violence</h2><div class="lead">Your abuser relied on your isolation. That ends now.</div></div>
+  <div class="page-bg pad cscroll">
+    <div class="alert danger mb16"><span class="alert-icon">📞</span><div class="alert-txt"><strong>Unity House 24-Hour Hotline</strong>Call: (518) 272-2370 · Text: (518) 720-6161 · Chat: rc.chat/uhdvs<br>Anonymous, confidential, collect calls accepted.</div></div>
+    <p class="body-txt">According to the ACLU, 46% of homeless women stayed with an abusive partner because they couldn't afford to leave. If that's you, this is not your fault — and there is a path out.</p>
+    <p class="body-txt">Your abuser spent time pulling you away from your support network — there was a reason. Finding new friends and reconnecting with old ones is your armor. Predators attack from the lonely edges, not the center of the pack.</p>
+    <div class="sec-label" style="padding:0 0 8px;">If You Have Children</div>
+    <p class="body-txt">Focus on getting them into a regular routine: school, homework, meals at regular times. Regular habits — even when they seem pointless — can help ground both you and your kids.</p>
+    <div class="sec-label" style="padding:0 0 8px;">Resources</div>
+    <div class="res-card mb8" style="border-left:4px solid #C0392B;border-radius:14px;"><div class="res-icon" style="background:#FFEBEB;">🏠</div><div class="res-info"><div class="res-name">Unity House DV Shelter</div><div class="res-addr">Troy, NY — specialized support for DV survivors</div><div class="res-btns"><a class="res-btn call" href="tel:5182722370">📞 (518) 272-2370</a><a class="res-btn" href="sms:5187206161">💬 Text Line</a></div></div></div>
+    <div class="res-card"><div class="res-icon" style="background:#E8F4FD;">📱</div><div class="res-info"><div class="res-name">Unity House 911 Cell Phones</div><div class="res-addr">Free 911 phones for DV &amp; sexual violence victims</div><div class="res-btns"><a class="res-btn call" href="tel:5182725917">📞 (518) 272-5917</a></div></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════ TIPS & TRICKS ═══════════════ -->
+<div class="screen" id="s-tips">
+  <div class="topbar"><button class="topbar-back" onclick="back()">←</button><div class="topbar-title">Tips &amp; Tricks</div></div>
+  <div class="section-banner orange"><h2>💡 Tips &amp; Tricks</h2><div class="lead">Practical wisdom from people who've been there.</div></div>
+  <div class="page-bg pad cscroll">
+    <div class="sec-label" style="padding:0 0 8px;">Places to Use</div>
+    <div class="info-row"><span class="info-ico">🏋️</span><div><div class="info-lbl">Gyms</div><div class="info-val">Basic membership = showers. Exercise first, feel good, then feel clean. YMCA and truck stops also have showers.</div></div></div>
+    <div class="info-row"><span class="info-ico">📚</span><div><div class="info-lbl">Libraries</div><div class="info-val">Guest pass, WiFi, computer access, device charging. Safe, warm, dry. No judgment.</div></div></div>
+    <div class="info-row"><span class="info-ico">⛽</span><div><div class="info-lbl">Gas Stations</div><div class="info-val">Build relationships. Clean up in the bathroom. Some let you microwave your own food. Auto shops sometimes have free coffee.</div></div></div>
+    <div class="info-row mb16"><span class="info-ico">📬</span><div><div class="info-lbl">Post Office General Delivery</div><div class="info-val">Receive mail at any post office: Your Name / GENERAL DELIVERY / City, State ZIP-9999</div></div></div>
+    <div class="sec-label" style="padding:0 0 8px;">Money &amp; Survival</div>
+    <div class="card step-card orange mb8"><div class="card-inner"><div class="step-title">If you panhandle — be honest</div><div class="step-body">Don't claim to be a veteran or anything else you're not. In some places, lying about your status to get money can be illegal. Be creative and truthful. Better yet — offer something: art, a service.</div></div></div>
+    <div class="card step-card orange mb8"><div class="card-inner"><div class="step-title">Help social workers help you</div><div class="step-body">Do as much research legwork yourself as you can. Go to the library first. Then bring what you've found to a social worker to push through what needs pushing.</div></div></div>
+    <div class="card step-card orange mb8"><div class="card-inner"><div class="step-title">A word about piercings</div><div class="step-body">While securing housing and employment, consider temporarily removing very visible piercings. There's social prejudice — unfair, but real. When you're back on your feet, express yourself fully. Until then: blend in, move forward.</div></div></div>
+    <div class="card step-card orange mb8"><div class="card-inner"><div class="step-title">There is a community out there</div><div class="step-body">Soup kitchens, thrift stores, social workers, community advocates. If you're on the streets long enough, you'll find a network of good people doing good. Find them. That network gives you strength.</div></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════ COMMUNITY BOARD ═══════════════ -->
+<div class="screen" id="s-board">
+  <div class="topbar"><button class="topbar-back" onclick="back()">←</button><div class="topbar-title">Community Board</div><button class="topbar-action" onclick="go('s-admin')">Admin</button></div>
+  <div class="board-compose">
+    <div class="compose-lbl">Leave a message for the community</div>
+    <textarea class="compose-area" id="new-post" placeholder="Share a tip, some encouragement, or ask a question. Be kind. This is our space." maxlength="300"></textarea>
+    <div class="compose-foot"><span class="compose-hint">Anonymous · max 300 chars</span><button class="compose-submit" onclick="postMsg()">Post ↑</button></div>
+  </div>
+  <div class="page-bg">
+    <div class="board-feed" id="board-feed">
+      <div class="post pinned"><div class="post-inner"><div class="pin-badge">📌 Pinned</div><div class="post-hdr"><div class="post-av" style="background:var(--blue);">A</div><div style="flex:1;"><div class="post-name">Admin</div><div class="post-time">Today · Official</div></div><span class="admin-badge">Admin</span></div><div class="post-body">Welcome to the community board. This is a safe space to share tips, ask questions, and lift each other up. You are not alone. — Admin</div></div></div>
+      <div class="post"><div class="post-inner"><div class="post-hdr"><div class="post-av" style="background:var(--green);">M</div><div style="flex:1;"><div class="post-name">Maria T.</div><div class="post-time">2 hours ago</div></div></div><div class="post-body">FOCUS Churches food pantry on State St is open Tuesday and Thursday mornings. They had coats last week too. Very kind people there 💙</div><div class="post-acts"><button class="post-btn">👍 Helpful</button><button class="post-btn">💬 Reply</button></div></div></div>
+      <div class="post"><div class="post-inner"><div class="post-hdr"><div class="post-av" style="background:var(--orange);">?</div><div style="flex:1;"><div class="post-name">Anonymous</div><div class="post-time">Yesterday</div></div></div><div class="post-body">Does anyone know if Albany County DSS does same-day emergency shelter referrals? I have two kids with me.</div><div class="post-acts"><button class="post-btn">💬 Reply</button></div></div></div>
+      <div class="post"><div class="post-inner"><div class="post-hdr"><div class="post-av" style="background:#5a3a7a;">D</div><div style="flex:1;"><div class="post-name">DK</div><div class="post-time">3 days ago</div></div></div><div class="post-body">Tip: the laundromat on Central Ave in Albany has a change machine and a folding table. Clean clothes helped me get a job interview. Keep going friends.</div><div class="post-acts"><button class="post-btn">👍 Helpful</button><button class="post-btn">💬 Reply</button></div></div></div>
+    </div>
+  </div>
+  <div class="bnav">
+    <button class="bnav-item" onclick="go('s-home')"><span class="bnav-ico">🏠</span><span class="bnav-lbl">Home</span></button>
+    <button class="bnav-item" onclick="go('s-resources')"><span class="bnav-ico">📍</span><span class="bnav-lbl">Resources</span></button>
+    <button class="bnav-item active"><span class="bnav-ico">💬</span><span class="bnav-lbl">Community</span></button>
+    <button class="bnav-item" onclick="go('s-docs')"><span class="bnav-ico">✅</span><span class="bnav-lbl">Checklist</span></button>
+  </div>
+</div>
+
+<!-- ═══════════════ ADMIN ═══════════════ -->
+<div class="screen" id="s-admin">
+  <div class="topbar"><button class="topbar-back" onclick="back()">←</button><div class="topbar-title">Administrator</div><span style="font-size:20px;position:relative;z-index:1;">🔐</span></div>
+  <div class="cscroll page-bg">
+    <div id="admin-login" style="padding:28px 16px;">
+      <div style="text-align:center;margin-bottom:28px;"><div style="font-size:48px;margin-bottom:12px;">🏡</div><div style="font-family:var(--fh);font-weight:900;font-size:24px;color:var(--blue);">Admin Login</div><div style="font-size:13px;color:var(--muted);margin-top:6px;">Livin' Poor — Board Administrator</div></div>
+      <div style="margin-bottom:14px;"><label class="fld-lbl">Username</label><input class="fld-in" type="text" id="au" placeholder="admin" autocomplete="username"/></div>
+      <div style="margin-bottom:14px;"><label class="fld-lbl">Password</label><input class="fld-in" type="password" id="ap" placeholder="••••••••" autocomplete="current-password"/></div>
+      <button class="login-btn" onclick="adminIn()">Sign In</button>
+      <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:14px;">Demo: enter any username + password</p>
+    </div>
+    <div id="admin-dash" style="display:none;padding:16px;">
+      <div class="admin-sec-title">Dashboard</div>
+      <div class="admin-stats"><div class="admin-stat"><div class="admin-num">47</div><div class="admin-nlbl">Total Posts</div></div><div class="admin-stat"><div class="admin-num">3</div><div class="admin-nlbl">Flagged</div></div><div class="admin-stat"><div class="admin-num">2</div><div class="admin-nlbl">Pinned</div></div><div class="admin-stat"><div class="admin-num">12</div><div class="admin-nlbl">Today</div></div></div>
+      <div class="admin-sec-title">Manage Posts</div>
+      <div class="admin-row"><div class="pin-badge">📌 Pinned</div><div class="admin-preview">"Welcome to the community board..." — Admin</div><div class="admin-meta">Today · Admin</div><div class="admin-btns"><button class="adm-btn">✏️ Edit</button><button class="adm-btn pin">📌 Unpin</button></div></div>
+      <div class="admin-row"><div class="admin-preview">"FOCUS Churches food pantry on State St is open Tuesday and Thursday mornings..."</div><div class="admin-meta">2 hours ago · Maria T. · 👍 5 helpful</div><div class="admin-btns"><button class="adm-btn pin">📌 Pin</button><button class="adm-btn del">🗑 Delete</button></div></div>
+      <div class="admin-row" style="border:1px solid #f5c4c4;"><div style="font-size:11px;font-family:var(--fh);font-weight:800;color:var(--red);margin-bottom:6px;">⚠️ Flagged for review</div><div class="admin-preview">"Does anyone know if Albany County DSS does same-day emergency shelter referrals?"</div><div class="admin-meta">Yesterday · Anonymous</div><div class="admin-btns"><button class="adm-btn">✅ Approve</button><button class="adm-btn del">🗑 Delete</button></div></div>
+      <div style="margin-top:20px;"><div class="admin-sec-title">Post Announcement</div><textarea class="compose-area" placeholder="Type an official admin announcement..." style="margin-bottom:10px;background:white;"></textarea><button class="compose-submit" style="width:100%;font-size:15px;padding:13px;">📌 Post + Pin Announcement</button></div>
+      <button onclick="adminOut()" style="width:100%;margin-top:14px;background:none;border:1px solid var(--border);border-radius:10px;padding:13px;font-family:var(--fh);font-weight:700;font-size:14px;color:var(--muted);cursor:pointer;">Sign Out</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /#app -->
+
+<script>
+var stack=['s-home'];
+var avc=['#1B4F8A','#2D7A3A','#E8762B','#5a3a7a','#C0392B','#2a6a7a'];
+var pc=4;
+
+function go(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  if(stack[stack.length-1]!==id) stack.push(id);
+  window.scrollTo(0,0);
+  var el=document.getElementById(id);
+  var sc=el.querySelector('.cscroll');
+  if(sc) sc.scrollTop=0;
+}
+function back(){
+  stack.pop();
+  var prev=stack[stack.length-1]||'s-home';
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(prev).classList.add('active');
+}
+function chk(el){
+  el.classList.toggle('checked');
+  el.querySelector('.check-box').textContent=el.classList.contains('checked')?'✓':'';
+}
+function postMsg(){
+  var ta=document.getElementById('new-post');
+  var txt=ta.value.trim();
+  if(!txt) return;
+  var feed=document.getElementById('board-feed');
+  var col=avc[pc%avc.length];
+  var div=document.createElement('div');
+  div.className='post';
+  div.innerHTML='<div class="post-inner"><div class="post-hdr"><div class="post-av" style="background:'+col+';">?</div><div style="flex:1;"><div class="post-name">Anonymous</div><div class="post-time">Just now</div></div></div><div class="post-body">'+txt+'</div><div class="post-acts"><button class="post-btn">👍 Helpful</button><button class="post-btn">💬 Reply</button></div></div>';
+  var first=feed.querySelector('.post');
+  feed.insertBefore(div,first.nextSibling);
+  ta.value=''; pc++;
+}
+function adminIn(){
+  var u=document.getElementById('au').value;
+  var p=document.getElementById('ap').value;
+  if(u&&p){
+    document.getElementById('admin-login').style.display='none';
+    document.getElementById('admin-dash').style.display='block';
+  }
+}
+function adminOut(){
+  document.getElementById('admin-login').style.display='block';
+  document.getElementById('admin-dash').style.display='none';
+  document.getElementById('au').value='';
+  document.getElementById('ap').value='';
+}
+</script>
+</body>
+</html>
